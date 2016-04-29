@@ -6,7 +6,11 @@ html(ng-app="tsTool")
     script(type='text/javascript', src='js/vendor/socket.io.js')
     script(type='text/javascript', src='js/app.js')
 
-    link(rel='stylesheet', href='css/normalize.min.css')
+    link(rel='stylesheet', href='css/fonts/font-face.css')
+
+    link(rel='stylesheet', href='css/vendor/bs.css')
+    link(rel='stylesheet', href='css/vendor/normalize.min.css')
+
     link(rel='stylesheet', href='css/main.css')
     link(rel='stylesheet', href='css/tsApp.css')
 
@@ -17,10 +21,10 @@ html(ng-app="tsTool")
     meta(name='viewport', content='width=device-width, initial-scale=1.0')
 
   body(ng-controller="tsMainController")
-    button(ng-click="ui.onSubmitClick()") CVS Submit
+    button(ng-click="ui.onSubmitClick()", class="btn btn-default") CVS Submit
     span response: {{ui.response}}
     br
-    button(ng-click="ui.onAddClick()") Add
+    button(ng-click="ui.onAddClick()", class="btn btn-default") Add
     input(ng-model="addInput", class="add-input")
     br
     table(class="ts-table", border="1", width="100%")
@@ -37,4 +41,4 @@ html(ng-app="tsTool")
             td {{rec.finish}}
             td {{rec.queue}}
             td {{rec.ticket}}
-            td {{rec.desc}}
+            td(class="description") {{rec.desc}}

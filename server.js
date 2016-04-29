@@ -3,7 +3,8 @@
     var Server = new ServerConstructor();
 
     function ServerConstructor() {
-        var User, FS, express, app, http, socket, exec, TS_FILEPATH_TEMPLATE, TS_FILEPATH_EXEC;
+        var User, FS, express, app, http, socket, exec, TS_FILEPATH_TEMPLATE, TS_FILEPATH_EXEC, me;
+        me = this;
 
         User = require("./modules/User");
         FS = require("fs");
@@ -12,7 +13,7 @@
         http = require("http").Server(app);
         socket = require("socket.io")(http);
         exec = require("child_process").exec;
-        var me = this;
+
 
         this.port = 5555;
 

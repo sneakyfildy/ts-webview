@@ -1,3 +1,25 @@
+body{
+    color: #333;
+    font-family: 'cooper_hewittbook'
+}
+.fancy-font{
+    font-family: 'cooper_hewittlight';
+}
+.fancy-font-thin{
+    font-family: 'cooper_hewittthin';
+}
+.fancy-font-bold{
+    font-family: 'cooper_hewittbold';
+}
+.fancy-font-semibold{
+    font-family: 'cooper_hewittsemibold';
+}
+.fancy-font-medium{
+    font-family: 'cooper_hewittmedium';
+}
+.fancy-font-book{
+    font-family: 'cooper_hewittbook';
+}
 #rawInput{
 	width: 100%;
 	height: 300px;
@@ -17,10 +39,16 @@
 
 .ts-table th{
 	background-color: #EFEFEF;
+    text-align: center;
+    font-family: 'cooper_hewittmedium';
 }
 
 .ts-table td{
 	text-align: center;
+    padding: 2px 4px;
+}
+.ts-table td.description{
+	text-align: left;
 }
 .ts-table td.date{
 	white-space: nowrap;
