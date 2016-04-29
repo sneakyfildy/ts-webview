@@ -1,0 +1,34 @@
+#rawInput{
+	width: 100%;
+	height: 300px;
+	display: block;
+}
+
+#errorsInput{
+	width: 100%;
+	height: 80px;
+	display: block;
+	color: #d60202;
+}
+
+.ts-table{
+	border-collapse: collapse;
+}
+
+.ts-table th{
+	background-color: #EFEFEF;
+}
+
+.ts-table td{
+	text-align: center;
+}
+.ts-table td.date{
+	white-space: nowrap;
+}
+span.error-original-line{
+	font-weight: bold;
+}
+
+input.add-input{
+    width: 100%;    
+}

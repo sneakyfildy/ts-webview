@@ -1,0 +1,15 @@
+{
+  "name": "ts-web",
+  "version": "0.0.1",
+  "devDependencies": {
+    "express": "*",
+    "jade": "*",
+    "username": "latest",
+    "socket.io": "latest"
+  },
+  "description": "ERROR: No README data found!",
+  "author": "IPONWEB",
+  "dependencies": {
+    "socket.io": "~1.4.5"
+  }
+}

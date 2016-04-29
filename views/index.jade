@@ -1,0 +1,40 @@
+html(ng-app="tsTool")
+  head
+    title= title
+    script(type='text/javascript', src='js/vendor/modernizr-2.6.2-respond-1.1.0.min.js')
+    script(type='text/javascript', src='js/vendor/angular.min.js')
+    script(type='text/javascript', src='js/vendor/socket.io.js')
+    script(type='text/javascript', src='js/app.js')
+
+    link(rel='stylesheet', href='css/normalize.min.css')
+    link(rel='stylesheet', href='css/main.css')
+    link(rel='stylesheet', href='css/tsApp.css')
+
+    link(rel='icon', type='image/png', href='favicon-32x32.png', size='32x32')
+    link(rel='icon', type='image/png', href='favicon-16x16.png', size='16x16')
+
+    meta(contet='text/html; charset=UTF-8', http-equiv='Content-Type')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+
+  body(ng-controller="tsMainController")
+    button(ng-click="ui.onSubmitClick()") CVS Submit
+    span response: {{ui.response}}
+    br
+    button(ng-click="ui.onAddClick()") Add
+    input(ng-model="addInput", class="add-input")
+    br
+    table(class="ts-table", border="1", width="100%")
+        tr
+            th Date
+            th Start time
+            th Finish time
+            th Queue ID
+            th Ticket ID
+            th Description
+        tr(ng-repeat="rec in records track by $index")
+            td(class="date") {{rec.day}}
+            td {{rec.start}}
+            td {{rec.finish}}
+            td {{rec.queue}}
+            td {{rec.ticket}}
+            td {{rec.desc}}
