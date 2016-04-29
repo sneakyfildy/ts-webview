@@ -1,84 +1,115 @@
 /* global require */
-(function(){
-    var User = require("./modules/User");
-    var fs = require("fs");
+(function() {
+    var Server = new ServerConstructor();
 
-    var express = require("express");
-    var app = express();
-    var http = require("http").Server(app);
-    var io = require("socket.io")(http);
-    var util = require("util");
-    var exec = require("child_process").exec;
-    function puts(res, error, stdout, stderr) {
-        if (stdout === "" && !stderr) {
-            stdout = "nothing";
-        }
-        if (error || stderr){
-            console.log(error, stderr);
-        }
-        io.emit("backend message", "submit");
-        res.end(stdout);
-    }
+    function ServerConstructor() {
+        var User, FS, express, app, http, socket, exec, TS_FILEPATH_TEMPLATE, TS_FILEPATH_EXEC;
 
-    var TS_FILEPATH_EXEC, TS_FILEPATH_TEMPLATE;
-    TS_FILEPATH_TEMPLATE = "/home/{0}/iponweb/admin/timesheet/{0}";
-    TS_FILEPATH_EXEC = makeTsPath("`whoami`");
-    function makeTsPath(userName){
-        return TS_FILEPATH_TEMPLATE.replace(/\{0\}/g, userName || User.name);
-    }
-    User.updateName();
+        User = require("./modules/User");
+        FS = require("fs");
+        express = require("express");
+        app = express();
+        http = require("http").Server(app);
+        socket = require("socket.io")(http);
+        exec = require("child_process").exec;
+        var me = this;
 
-    app.set("view engine", "jade");
-    app.use(express.static("static"));
+        this.port = 5555;
 
-    app.get("/read", function (req, res) {
-        fs.readFile(makeTsPath(), function (err, data) {
-            if (err) {
-                return console.log(err);
-            }
-            res.end(data);
-        });
-    });
+        this.init = function() {
 
-    app.get("/submit", function (req, res) {
-        exec("cvs -d :ext:`whoami`@www.iponweb.net:/var/cvs ci -m \"updated\" " + TS_FILEPATH_EXEC, puts.bind(this, res));
-    });
-    app.get("/user", function (request, response) {
-        User.getNameByRemoteRequest(response);
-    });
-    app.post("/add", function (req, res) {
-        var data = "";
-        req.on("data", function (chunk) {
-            data += chunk;
-        })
-        .on("end", function () {
-            fs.appendFile(makeTsPath(), JSON.parse(data).data + "\n", function(){
-                fs.readFile(makeTsPath(), function (err, data) {
-                    if (err) {
-                        return console.log(err);
-                    }
-                    res.end(data);
+            TS_FILEPATH_TEMPLATE = "/home/{0}/iponweb/admin/timesheet/{0}";
+            TS_FILEPATH_EXEC = this.makeTsPath("`whoami`");
+
+            User.updateName();
+
+            this.setupPaths();
+
+            socket.on("connection", function(socket) {
+                console.log("a user connected");
+                socket.on("disconnect", function() {
+                    console.log("user disconnected");
+                });
+                socket.on("chat message", function(msg) {
+                    console.log("message: " + msg);
                 });
             });
 
-        });
+            http.listen(this.port, function() {
+                console.log("Server started; port: " + me.port);
+            });
 
-    });
-    app.get("/", function (req, res) {
-        res.render("index", {title: "TS Ext WebView", message: "Hello there!"});
-    });
+            return this;
+        };
 
-    io.on("connection", function (socket) {
-        console.log("a user connected");
-        socket.on("disconnect", function () {
-            console.log("user disconnected");
-        });
-        socket.on("chat message", function (msg) {
-            console.log("message: " + msg);
-        });
-    });
+        this.indexPage = function(req, res) {
+            res.render("index", {title: "TS Ext WebView"});
+        };
 
-    http.listen(5555, function () {
-        console.log("Example app listening on port 5555!");
-    });
+        this.handleReadFileRequest = function(req, res) {
+            FS.readFile(me.makeTsPath(), function(err, data) {
+                if (err) {
+                    return console.log(err);
+                }
+                res.end(data);
+            });
+        };
+
+        this.handleSubmitRequest = function(req, res) {
+            var submitCommand = "cvs -d :ext:`whoami`@www.iponweb.net:/var/cvs ci -m \"updated\" " + TS_FILEPATH_EXEC;
+            exec(submitCommand, me.onTimesheetSubmit.bind(me, res));
+        };
+
+        this.handleUserRequest = function(request, response) {
+            User.getNameByRemoteRequest(response);
+        };
+
+        this.handleAddRecordRequest = function(req, res) {
+            var data = "";
+            req.on("data", function(chunk) {
+                data += chunk;
+            })
+            .on("end", function() {
+                FS.appendFile(me.makeTsPath(), JSON.parse(data).data + "\n", function() {
+                    FS.readFile(me.makeTsPath(), function(err, data) {
+                        if (err) {
+                            return console.log(err);
+                        }
+                        res.end(data);
+                    });
+                });
+
+            });
+        };
+
+
+        this.setupPaths = function(){
+            app.set("view engine", "jade");
+            app.use(express.static("static"));
+
+            app.post("/add", this.handleAddRecordRequest.bind(this));
+            app.get("/read", this.handleReadFileRequest.bind(this));
+            app.get("/submit", this.handleSubmitRequest.bind(this));
+
+            app.get("/user", this.handleUserRequest.bind(this));
+            app.get("/", this.indexPage.bind(this));
+        };
+
+        this.onTimesheetSubmit = function(res, error, stdout, stderr) {
+            if (stdout === "" && !stderr) {
+                stdout = "nothing";
+            }
+            if (error || stderr) {
+                console.log(error, stderr);
+            }
+            socket.emit("backend message", "submit");
+            res.end(stdout);
+        };
+
+        this.makeTsPath = function(userName) {
+            return TS_FILEPATH_TEMPLATE.replace(/\{0\}/g, userName || User.name);
+        };
+        return this.init();
+    }
+
 })();
