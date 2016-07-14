@@ -3,7 +3,7 @@
     var Server = new ServerConstructor();
 
     function ServerConstructor() {
-        var User, FS, express, app, http, socket, exec, TS_FILEPATH_TEMPLATE, TS_FILEPATH_EXEC, me;
+        var User, FS, express, app, http, socket, exec, TS_FILEPATH_TEMPLATE, TS_FILEPATH_EXEC, me, TS_FILEPATH_TEMPLATE_REL;
         me = this;
 
         User = require("./modules/User");
@@ -20,6 +20,7 @@
         this.init = function() {
 
             TS_FILEPATH_TEMPLATE = "/home/{0}/iponweb/admin/timesheet/{0}";
+            TS_FILEPATH_TEMPLATE_REL = "iponweb/admin/timesheet/`whoami`";
             TS_FILEPATH_EXEC = this.makeTsPath("`whoami`");
 
             User.updateName();
@@ -57,7 +58,7 @@
         };
 
         this.handleSubmitRequest = function(req, res) {
-            var submitCommand = "cvs -d :ext:`whoami`@www.iponweb.net:/var/cvs ci -m \"updated\" " + TS_FILEPATH_EXEC;
+            var submitCommand = "cd ~ \n cvs -d :ext:`whoami`@timesheets.iponweb.net:/var/cvs ci -m \"updated\" " + TS_FILEPATH_TEMPLATE_REL;
             exec(submitCommand, me.onTimesheetSubmit.bind(me, res));
         };
 
