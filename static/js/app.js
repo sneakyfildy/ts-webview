@@ -106,8 +106,6 @@ tsTool.controller('tsMainController', function ($scope, $sce, $http) {
             }
 
             parsed = this.parseInput(tmp);
-            //tmp = this.validateParsed(tmp);
-
 
             validatedResult = this.validateParsed(parsed.result);
             this.parsedInput = validatedResult;
@@ -218,14 +216,19 @@ tsTool.controller('tsMainController', function ($scope, $sce, $http) {
                 }
 
                 line = line.split(',');
-
+                var isJira;
                 if (desc) {
+                    // jira ticket will have 4 entries if description was in
+                    // quotes and it was cut from a record...
+                    isJira = line.length === 4;
                     record.desc = desc;
                 } else {
+                    // ...and 5 entries if description was not cut from a record
+                    isJira = line.length === 5;
                     record.desc = line.pop();
                 }
                 record.ticket = line.pop();
-                record.queue = line.pop();
+                record.queue = isJira ? '' : line.pop();
                 record.finish = line.pop();
                 record.start = line.pop();
                 record.day = line.pop();
