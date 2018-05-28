@@ -1,8 +1,12 @@
 /* global require */
 (function() {
-    var Server = new ServerConstructor();
+    var ServerAngular = new ServerConstructor('angular');
+    ServerAngular.init();
 
-    function ServerConstructor() {
+    var ServerReact = new ServerConstructor('react');
+    ServerReact.init();
+
+    function ServerConstructor(type) {
         var User, FS, express, app, http, socket, exec, TS_FILEPATH_TEMPLATE, TS_FILEPATH_EXEC, me, TS_FILEPATH_TEMPLATE_REL;
         me = this;
 
@@ -14,8 +18,8 @@
         socket = require("socket.io")(http);
         exec = require("child_process").exec;
 
-
-        this.port = 5555;
+        this.type = type;
+        this.port = this.type === 'angular' ? 5555 : 5556;
 
         this.init = function() {
 
@@ -45,7 +49,9 @@
         };
 
         this.indexPage = function(req, res) {
-            res.render("index", {title: "TS Ext WebView"});
+            this.type === 'angular'
+                ? res.render("index", {title: "TS Ext WebView"})
+                : res.render("indexReact", {title: "TS Ext React WebView"});
         };
 
         this.handleReadFileRequest = function(req, res) {
@@ -111,7 +117,6 @@
         this.makeTsPath = function(userName) {
             return TS_FILEPATH_TEMPLATE.replace(/\{0\}/g, userName || User.name);
         };
-        return this.init();
     }
 
 })();

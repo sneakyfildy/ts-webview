@@ -2,15 +2,32 @@
   "name": "ts-web",
   "version": "0.0.1",
   "devDependencies": {
+    "awesome-typescript-loader": "^5.0.0",
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-preset-env": "^1.7.0",
+    "babel-preset-react": "^6.24.1",
+    "css-loader": "^0.28.11",
     "express": "*",
     "jade": "*",
+    "socket.io": "latest",
+    "style-loader": "^0.21.0",
+    "typescript": "^2.8.3",
     "username": "latest",
-    "socket.io": "latest"
+    "webpack": "^4.8.3",
+    "webpack-cli": "^2.1.4"
   },
   "description": "ERROR: No README data found!",
   "author": "IPONWEB",
   "dependencies": {
+    "axios": "^0.18.0",
     "nodemon": "^1.13.3",
+    "react": "^16.4.0",
+    "react-dom": "^16.4.0",
     "socket.io": "~1.4.5"
+  },
+  "scripts": {
+    "start": "webpack --mode development",
+    "build": "webpack --mode production"
   }
 }

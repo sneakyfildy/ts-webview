@@ -1,0 +1,23 @@
+html(ng-app="tsTool")
+  head
+    title= title
+    script(type='text/javascript', src='js/vendor/socket.io.js')
+
+    link(rel='stylesheet', href='css/fonts/font-face.css')
+
+    link(rel='stylesheet', href='css/vendor/bs.css')
+    link(rel='stylesheet', href='css/vendor/normalize.min.css')
+
+    link(rel='stylesheet', href='css/main.css')
+    link(rel='stylesheet', href='css/tsApp.css')
+
+    link(rel='icon', type='image/png', href='favicon-32x32.png', size='32x32')
+    link(rel='icon', type='image/png', href='favicon-16x16.png', size='16x16')
+
+    meta(contet='text/html; charset=UTF-8', http-equiv='Content-Type')
+    meta(name='viewport', content='width=device-width, initial-scale=1.0')
+    script(type='text/javascript', src='js/dist/vendors.bundle.js')
+
+  body()
+    div(id="index")
+    script(type='text/javascript', src='js/dist/app.bundle.js')
