@@ -76,13 +76,16 @@ class TimesheetControls extends React.Component {
     }
 
     onSubmitClick () {
-        console.log(this.props.inputValue);
+        this.props.afterSubmitClick();
     }
 
     onAddClick (e) {
         this.props.afterAddClick(this.state.inputValue);
     }
 
+    onRemoveLastLineClick () {
+        this.props.afterRemoveLastLineClick();
+    }
 
     handleChange (e) {
         this.setState({ inputValue: e.target.value });
@@ -94,18 +97,15 @@ class TimesheetControls extends React.Component {
         return (
             <div>
                 <button className="btn btn-default" onClick={() => this.onSubmitClick()}>CVS Submit</button>
-                <span>response ui.response</span>
+                <span>{this.props.submitResponse}</span>
                 <br/>
                 <button className="btn btn-default" onClick={() => this.onAddClick()}>Add</button>
+                <button className="btn btn-default" onClick={() => this.onRemoveLastLineClick()}>Remove last line</button>
                 <input className="add-input" type="text" value={this.state.inputValue} onChange={this.handleChange.bind(this)} />
             </div>
         );
     }
 }
-
-TimesheetControls.propTypes = {
-  afterAddClick: PropTypes.func
-};
 
 class TimesheetApp extends React.Component {
     constructor (props) {
@@ -113,33 +113,63 @@ class TimesheetApp extends React.Component {
 
         this.state = {
             records: [],
-            inputValue: ''
+            inputValue: '',
+            submitResponse: ''
         };
     }
 
     afterAddClick (inputValue) {
-        console.log('add: ' + inputValue);
+        axios.post('/add', {data: inputValue})
+            .then(res => {
+                this.getRecords();
+            });
+    }
+
+    afterRemoveLastLineClick () {
+//        var records = this.state.records.slice();
+//        records.shift();
+//        this.setState({
+//            records: records
+//        });
+        axios.post('/remove')
+            .then(res => {
+                this.getRecords();
+            });
+    }
+
+    afterSubmitClick () {
+        axios.get('/submit')
+            .then(res => {
+                this.setState({
+                    submitResponse: res.data
+                })
+            });
     }
 
     componentDidMount (){
-        axios.get('/read')
-            .then(res => {
-                let records = TimesheetData.parseRawFile(res.data);
-                this.setState({records: records});
-            });
+        this.getRecords();
     }
 
     componentWillUnmount (){
     }
 
-    handleChange (e) {debugger;
-        this.setState({ inputValue: e.target.value });
+    getRecords () {
+        axios.get('/read')
+            .then(res => {
+                let records = TimesheetData.parseRawFile(res.data);
+                records = records.slice(0, 20);
+                this.setState({records: records});
+            });
     }
 
     render (){
         return (
             <div>
-                <TimesheetControls afterAddClick={(text) => this.afterAddClick(text)}/>
+                <TimesheetControls
+                    afterAddClick={(text) => this.afterAddClick(text)}
+                    afterRemoveLastLineClick={() => this.afterRemoveLastLineClick()}
+                    afterSubmitClick={() => this.afterSubmitClick()}
+                    submitResponse={this.state.submitResponse}/>
                 <TimesheetTable records={this.state.records}/>
             </div>
         );

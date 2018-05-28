@@ -23101,12 +23101,17 @@ var TimesheetControls = function (_React$Component3) {
     _createClass(TimesheetControls, [{
         key: 'onSubmitClick',
         value: function onSubmitClick() {
-            console.log(this.props.inputValue);
+            this.props.afterSubmitClick();
         }
     }, {
         key: 'onAddClick',
         value: function onAddClick(e) {
             this.props.afterAddClick(this.state.inputValue);
+        }
+    }, {
+        key: 'onRemoveLastLineClick',
+        value: function onRemoveLastLineClick() {
+            this.props.afterRemoveLastLineClick();
         }
     }, {
         key: 'handleChange',
@@ -23133,7 +23138,7 @@ var TimesheetControls = function (_React$Component3) {
                 React.createElement(
                     'span',
                     null,
-                    'response ui.response'
+                    this.props.submitResponse
                 ),
                 React.createElement('br', null),
                 React.createElement(
@@ -23143,6 +23148,13 @@ var TimesheetControls = function (_React$Component3) {
                         } },
                     'Add'
                 ),
+                React.createElement(
+                    'button',
+                    { className: 'btn btn-default', onClick: function onClick() {
+                            return _this4.onRemoveLastLineClick();
+                        } },
+                    'Remove last line'
+                ),
                 React.createElement('input', { className: 'add-input', type: 'text', value: this.state.inputValue, onChange: this.handleChange.bind(this) })
             );
         }
@@ -23150,10 +23162,6 @@ var TimesheetControls = function (_React$Component3) {
 
     return TimesheetControls;
 }(React.Component);
-
-TimesheetControls.propTypes = {
-    afterAddClick: _propTypes2.default.func
-};
 
 var TimesheetApp = function (_React$Component4) {
     _inherits(TimesheetApp, _React$Component4);
@@ -23165,7 +23173,8 @@ var TimesheetApp = function (_React$Component4) {
 
         _this5.state = {
             records: [],
-            inputValue: ''
+            inputValue: '',
+            submitResponse: ''
         };
         return _this5;
     }
@@ -23173,38 +23182,75 @@ var TimesheetApp = function (_React$Component4) {
     _createClass(TimesheetApp, [{
         key: 'afterAddClick',
         value: function afterAddClick(inputValue) {
-            console.log('add: ' + inputValue);
+            var _this6 = this;
+
+            _axios2.default.post('/add', { data: inputValue }).then(function (res) {
+                _this6.getRecords();
+            });
+        }
+    }, {
+        key: 'afterRemoveLastLineClick',
+        value: function afterRemoveLastLineClick() {
+            var _this7 = this;
+
+            //        var records = this.state.records.slice();
+            //        records.shift();
+            //        this.setState({
+            //            records: records
+            //        });
+            _axios2.default.post('/remove').then(function (res) {
+                _this7.getRecords();
+            });
+        }
+    }, {
+        key: 'afterSubmitClick',
+        value: function afterSubmitClick() {
+            var _this8 = this;
+
+            _axios2.default.get('/submit').then(function (res) {
+                _this8.setState({
+                    submitResponse: res.data
+                });
+            });
         }
     }, {
         key: 'componentDidMount',
         value: function componentDidMount() {
-            var _this6 = this;
-
-            _axios2.default.get('/read').then(function (res) {
-                var records = _data.TimesheetData.parseRawFile(res.data);
-                _this6.setState({ records: records });
-            });
+            this.getRecords();
         }
     }, {
         key: 'componentWillUnmount',
         value: function componentWillUnmount() {}
     }, {
-        key: 'handleChange',
-        value: function handleChange(e) {
-            debugger;
-            this.setState({ inputValue: e.target.value });
+        key: 'getRecords',
+        value: function getRecords() {
+            var _this9 = this;
+
+            _axios2.default.get('/read').then(function (res) {
+                var records = _data.TimesheetData.parseRawFile(res.data);
+                records = records.slice(0, 20);
+                _this9.setState({ records: records });
+            });
         }
     }, {
         key: 'render',
         value: function render() {
-            var _this7 = this;
+            var _this10 = this;
 
             return React.createElement(
                 'div',
                 null,
-                React.createElement(TimesheetControls, { afterAddClick: function afterAddClick(text) {
-                        return _this7.afterAddClick(text);
-                    } }),
+                React.createElement(TimesheetControls, {
+                    afterAddClick: function afterAddClick(text) {
+                        return _this10.afterAddClick(text);
+                    },
+                    afterRemoveLastLineClick: function afterRemoveLastLineClick() {
+                        return _this10.afterRemoveLastLineClick();
+                    },
+                    afterSubmitClick: function afterSubmitClick() {
+                        return _this10.afterSubmitClick();
+                    },
+                    submitResponse: this.state.submitResponse }),
                 React.createElement(TimesheetTable, { records: this.state.records })
             );
         }

@@ -74,20 +74,49 @@
 
         this.handleAddRecordRequest = function(req, res) {
             var data = "";
-            req.on("data", function(chunk) {
-                data += chunk;
-            })
-            .on("end", function() {
-                FS.appendFile(me.makeTsPath(), JSON.parse(data).data + "\n", function() {
-                    FS.readFile(me.makeTsPath(), function(err, data) {
+            req
+                .on("data", function(chunk) {
+                    data += chunk;
+                })
+                .on("end", function() {
+                    FS.appendFile(me.makeTsPath(), JSON.parse(data).data + "\n", function() {
+                        FS.readFile(me.makeTsPath(), function(err, data) {
+                            if (err) {
+                                return console.log(err);
+                            }
+                            res.end(data);
+                        });
+                    });
+                });
+        };
+
+        this.handleDeleteRecordRequest = function(req, res) {
+            var data = "";
+            req
+                .on("data", function(chunk) {
+                    data += chunk;
+                })
+                .on("end", function() {
+                    FS.readFile(me.makeTsPath(), 'utf8', function(err, fileData) {
                         if (err) {
                             return console.log(err);
                         }
-                        res.end(data);
+                        try {
+                            var fileDataArr = fileData.split('\n');
+                            var linesExceptFirst = fileDataArr.slice(0, fileDataArr.length - 1).join('\n');
+                            FS.writeFile(me.makeTsPath(), linesExceptFirst, function(err) {
+                                if (!!err) {
+                                    res.status(500).end(err.message);
+                                } else {
+                                    res.end(JSON.stringify({status: 'success'}));
+                                }
+
+                            });
+                        } catch (err) {
+                            res.status(500).end((err && err.message) || 'Something failed');
+                        }
                     });
                 });
-
-            });
         };
 
 
@@ -97,6 +126,7 @@
 
             app.post("/add", this.handleAddRecordRequest.bind(this));
             app.get("/read", this.handleReadFileRequest.bind(this));
+            app.post("/remove", this.handleDeleteRecordRequest.bind(this));
             app.get("/submit", this.handleSubmitRequest.bind(this));
 
             app.get("/user", this.handleUserRequest.bind(this));
