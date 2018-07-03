@@ -26,9 +26,6 @@ class TimesheetRecord extends React.Component {
 class TimesheetTable extends React.Component {
     constructor (props){
         super(props);
-//        this.state = {
-//            data: []
-//        };
     }
 
     renderData (startIndex, endIndex){
@@ -44,6 +41,7 @@ class TimesheetTable extends React.Component {
     renderRecord (record){
         return <TimesheetRecord record={record} key={idGen.id('timesheet-record-')}/>;
     }
+    
     render (){
         const status = 'Next player: X';
 
@@ -89,8 +87,6 @@ class TimesheetControls extends React.Component {
 
     handleChange (e) {
         this.setState({ inputValue: e.target.value });
-
-        //this.props.inputValue = e.target.value;
     }
 
     render (){
@@ -126,11 +122,6 @@ class TimesheetApp extends React.Component {
     }
 
     afterRemoveLastLineClick () {
-//        var records = this.state.records.slice();
-//        records.shift();
-//        this.setState({
-//            records: records
-//        });
         axios.post('/remove')
             .then(res => {
                 this.getRecords();
@@ -181,4 +172,4 @@ class TimesheetApp extends React.Component {
 ReactDOM.render(
     <TimesheetApp />,
     document.getElementById('index')
-    );
+);

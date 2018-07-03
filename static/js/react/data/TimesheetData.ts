@@ -35,7 +35,7 @@ export class TimesheetDataCls {
                     desc = line.match(/".+"$/gim)[0] || '';
                     line = line.replace(',' + desc, '');
                 } catch (err) {
-                    debugger;
+                    console.error(err);
                 }
             }
 

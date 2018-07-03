@@ -13,12 +13,9 @@ module.exports = {
     resolve: {
         modules: [
             currentDir,
-            path.resolve(currentDir, 'node_modules'),
-            'node_modules'
+            path.resolve(currentDir, 'node_modules')
         ],
         extensions: ['.ts', '.js', '.json'],
-        alias: {
-        },
         symlinks: false
     },
     module: {
@@ -49,12 +46,6 @@ module.exports = {
     },
     optimization: {
         splitChunks: {
-            //chunks: "async",
-            //minSize: 30000,
-            //minChunks: 1,
-            //maxAsyncRequests: 5,
-            //maxInitialRequests: 3,
-            //automaticNameDelimiter: '~',
             name: true,
             cacheGroups: {
                 commons: {
@@ -70,21 +61,6 @@ module.exports = {
             }
         }
     },
-//    plugins: [
-//        new webpack.optimize.CommonsChunkPlugin({
-//            name: 'vendor',
-//            filename: 'vendor.bundle.js',
-//            minChunks: function(module){
-//                var res;
-//                try {
-//                    res = module.resource.match(/static\/js\/vendor|node_modules|/);
-//                }catch(err){
-//                    //console.error(module + ' is screwed up; res = ' + module.resource);
-//                }
-//                return res;
-//            }
-//        }),
-//    ],
     watch: true,
     cache: true,
     devtool: false
